@@ -3,6 +3,7 @@ require 'gosu'
 
 class Cube
   @@l = 5
+  @@zoom = 5
   @@edges = [
     [0, 1],
     [1, 3],
@@ -22,13 +23,12 @@ class Cube
     @nodes = [-@@l, @@l].repeated_permutation(3).to_a
   end
     
-  def draw
+  def edges
     @@edges.each do |e|
       x1 = @nodes[e[0]][0]
       y1 = @nodes[e[0]][1]
       x2 = @nodes[e[1]][0]
       y2 = @nodes[e[1]][1]
-      Gosu::draw_line(x1, y1, Gosu::Color::YELLOW, x2, y2, Gosu::Color::YELLOW)
     end
   end
 
