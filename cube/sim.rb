@@ -5,6 +5,7 @@ require './cube'
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
+
   def initialize
     super @@w, @@h
     self.caption = "Ruby :: Gosu :: Cube"
@@ -13,16 +14,17 @@ class SimWindow < Gosu::Window
 
   def update
   end
-    
+
   def draw
     @cube.draw
   end
-        
+
   def button_down(id)
     if id == Gosu::KbEscape
       close
     end
   end
+
 end
 
 window = SimWindow.new
