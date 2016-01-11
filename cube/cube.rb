@@ -1,7 +1,78 @@
 #cube.rb
 require 'gosu'
 
+class Rotation 
+  def initialize(theta)
+    @theta = theta
+    @mMATRIX_X =
+      [
+        [1,   0,    0],
+        [0, cos, -sin],
+        [0, sin,  cos]
+      ]
+
+    @mMATRIX_Y =
+      [
+        [ cos, 0, sin],
+        [   0, 1,   0],
+        [-sin, 0, cos]
+      ]
+
+    @mMATRIX_Z =
+      [
+        [cos, -sin, 0],
+        [sin,  cos, 0],
+        [  0,    0, 1]
+      ]
+  end
+
+  def x(v)    
+    @mMATRIX_X.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+  end
+
+  def y(v)
+    @mMATRIX_Y.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+  end
+
+  def z(v)
+    @mMATRIX_Z.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+  end
+
+  private
+
+  def cos
+    Math::cos(@theta)
+  end
+
+  def sin
+    Math::sin(@theta)
+  end
+end
+
+class Vector
+  def initialize(array)
+    @v = array
+    @rotation = Rotation.new(0.0)
+  end
+
+  def rotate_x(r)
+    r.x(@v)
+  end
+
+  def rotate_y(r)
+    r.y(@v)
+  end
+
+  def rotate_z(r)
+    r.z(@v)
+  end
+  # Rotation
+end
+
 class Cube
+  FROM = 0
+  TO = 1
+
   @@l = 5
   @@zoom = 5
   @@edges = [
@@ -18,19 +89,43 @@ class Cube
     [5, 7],
     [4, 6]
   ]
+  @@colour = Gosu::Color::WHITE
 
   def initialize
-    #[[-5, -5, -5], [-5, -5, 5], [-5, 5, -5], [-5, 5, 5], [5, -5, -5], [5, -5, 5], [5, 5, -5], [5, 5, 5]]
-    @nodes = [-@@l, @@l].repeated_permutation(3).to_a
+    @vertices = [-@@l, @@l].repeated_permutation(3).to_a
   end
 
-  def edges
-    @@edges.each do |e|
-      x1 = @nodes[e[0]][0]
-      y1 = @nodes[e[0]][1]
-      x2 = @nodes[e[1]][0]
-      y2 = @nodes[e[1]][1]
-    end
+  def rotate_x(theta)
+    rotation = Rotation.new(theta)
+    @vertices.each{|v| Vector.new(v).rotate_x(rotation)}
+  end
+
+  def rotate_y(theta)
+    rotation = Rotation.new(theta)
+    @vertices.each{|v| Vector.new(v).rotate_y(rotation)}
+  end
+
+  def rotate_z(theta)
+    rotation = Rotation.new(theta)
+    @vertices.each{|v| Vector.new(v).rotate_z(rotation)}
+  end
+
+  def display
+    #vertices
+    @vertices.each{|v| display_vertex(v)}
+    #edges
+    @@edges.each{|e| display_edge(@vertices[e[FROM]], @vertices[e[TO]])}
+  end
+
+  private
+
+  def display_vertex(v)
+    puts v[0], v[1]
+    Gosu::draw_rect(v[0], v[1], 5, 5, @@colour)
+  end
+
+  def display_edge(v, u)
+    Gosu::draw_line(v[0], v[1], @@colour, u[0], u[1], @@colour) 
   end
 
 end
