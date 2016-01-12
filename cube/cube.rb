@@ -1,9 +1,9 @@
 #cube.rb
 require 'gosu'
-class Rotation 
+class Rotation
   def initialize(theta)
     @theta = theta
-    
+
     @mMATRIX_X =
       [
         [1,   0,    0],
@@ -26,16 +26,16 @@ class Rotation
       ]
   end
 
-  def x(v)    
-    @mMATRIX_X.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+  def x(v)
+    @mMATRIX_X.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)}
   end
 
   def y(v)
-    @mMATRIX_Y.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+    @mMATRIX_Y.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)}
   end
 
   def z(v)
-    @mMATRIX_Z.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)} 
+    @mMATRIX_Z.map{|u| u.zip(v).map{|i, j| i*j}.inject(:+)}
   end
 
   private
@@ -119,19 +119,25 @@ class Cube
   private
 
   def display_vertex(v)
-    x = v[0] + 320
-    y = -v[1] + 240
-    print "// X: #{x} Y: #{y} //" 
+    delta = 400 /(v[2] + 200)
+    x = delta * v[0] + 320
+    y = delta * -v[1] + 240
+
     Gosu::draw_rect(x, y, 5, 5, @@colour)
   end
 
   def display_edge(v, u)
-    x1 = v[0] + 320
-    y1 = -v[1] + 240
+    delta_v = 400 /(v[2] + 200)
+    delta_u = 400 /(u[2] + 200)
 
-    x2 = u[0] + 320
-    y2 = -u[1] + 240
-    Gosu::draw_line(x1, y1, @@colour, x2, y2, @@colour) 
+    x1 = delta_v * v[0] + 320
+    y1 = delta_v * -v[1] + 240
+
+    x2 = delta_u * u[0] + 320
+    y2 = delta_u * -u[1] + 240
+
+    Gosu::draw_line(x1, y1, @@colour,
+      x2, y2, @@colour)
   end
 
 end

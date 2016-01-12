@@ -5,7 +5,7 @@ require './cube'
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
-  @@theta = 45 * Math::PI / 180 
+  @@theta = 20 * Math::PI / 180
 
   def initialize
     super @@w, @@h
@@ -17,7 +17,7 @@ class SimWindow < Gosu::Window
   end
 
   def draw
-    @cube.display 
+    @cube.display
   end
 
   def button_down(id)
