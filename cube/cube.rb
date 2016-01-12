@@ -1,9 +1,9 @@
 #cube.rb
 require 'gosu'
-
 class Rotation 
   def initialize(theta)
     @theta = theta
+    
     @mMATRIX_X =
       [
         [1,   0,    0],
@@ -73,8 +73,7 @@ class Cube
   FROM = 0
   TO = 1
 
-  @@l = 5
-  @@zoom = 5
+  @@l = 50
   @@edges = [
     [0, 1],
     [1, 3],
@@ -97,17 +96,17 @@ class Cube
 
   def rotate_x(theta)
     rotation = Rotation.new(theta)
-    @vertices.each{|v| Vector.new(v).rotate_x(rotation)}
+    @vertices.map!{|v| Vector.new(v).rotate_x(rotation)}
   end
 
   def rotate_y(theta)
     rotation = Rotation.new(theta)
-    @vertices.each{|v| Vector.new(v).rotate_y(rotation)}
+    @vertices.map!{|v| Vector.new(v).rotate_y(rotation)}
   end
 
   def rotate_z(theta)
     rotation = Rotation.new(theta)
-    @vertices.each{|v| Vector.new(v).rotate_z(rotation)}
+    @vertices.map!{|v| Vector.new(v).rotate_z(rotation)}
   end
 
   def display
@@ -120,12 +119,19 @@ class Cube
   private
 
   def display_vertex(v)
-    puts v[0], v[1]
-    Gosu::draw_rect(v[0], v[1], 5, 5, @@colour)
+    x = v[0] + 320
+    y = -v[1] + 240
+    print "// X: #{x} Y: #{y} //" 
+    Gosu::draw_rect(x, y, 5, 5, @@colour)
   end
 
   def display_edge(v, u)
-    Gosu::draw_line(v[0], v[1], @@colour, u[0], u[1], @@colour) 
+    x1 = v[0] + 320
+    y1 = -v[1] + 240
+
+    x2 = u[0] + 320
+    y2 = -u[1] + 240
+    Gosu::draw_line(x1, y1, @@colour, x2, y2, @@colour) 
   end
 
 end

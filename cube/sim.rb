@@ -5,7 +5,7 @@ require './cube'
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
-  @@theta = 25
+  @@theta = 45 * Math::PI / 180 
 
   def initialize
     super @@w, @@h
@@ -27,10 +27,14 @@ class SimWindow < Gosu::Window
       @cube.rotate_x(@@theta)
     elsif id == Gosu::KbK # along -x
       @cube.rotate_x(-@@theta)
-    #elsif id == Gosu::KbH # along +y
-    #elsif id == Gosu::KbL # along -y
-    #elsif id == Gosu::KbA # along +z
-    #elsif id == Gosu::KbS # along -z
+    elsif id == Gosu::KbH # along +y
+      @cube.rotate_y(@@theta)
+    elsif id == Gosu::KbL # along -y
+      @cube.rotate_y(-@@theta)
+    elsif id == Gosu::KbA # along +z
+      @cube.rotate_z(@@theta)
+    elsif id == Gosu::KbS # along -z
+      @cube.rotate_z(-@@theta)
     end
   end
 
