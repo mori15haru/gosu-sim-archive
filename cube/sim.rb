@@ -24,17 +24,17 @@ class SimWindow < Gosu::Window
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbJ # along +x
-      @cube.rotate_x(@@theta)
+      @cube.rotate('x', @@theta)
     elsif id == Gosu::KbK # along -x
-      @cube.rotate_x(-@@theta)
+      @cube.rotate('x', -@@theta)
     elsif id == Gosu::KbH # along +y
-      @cube.rotate_y(@@theta)
+      @cube.rotate('y', @@theta)
     elsif id == Gosu::KbL # along -y
-      @cube.rotate_y(-@@theta)
+      @cube.rotate('y', -@@theta)
     elsif id == Gosu::KbA # along +z
-      @cube.rotate_z(@@theta)
+      @cube.rotate('z', @@theta)
     elsif id == Gosu::KbS # along -z
-      @cube.rotate_z(-@@theta)
+      @cube.rotate('z', -@@theta)
     end
   end
 
