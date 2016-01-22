@@ -1,0 +1,35 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
+    byebug (8.2.1)
+    coderay (1.1.0)
+    debug_inspector (0.0.2)
+    method_source (0.8.2)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-byebug (3.3.0)
+      byebug (~> 8.0)
+      pry (~> 0.10)
+    pry-remote (0.1.8)
+      pry (~> 0.9)
+      slop (~> 3.0)
+    pry-stack_explorer (0.4.9.2)
+      binding_of_caller (>= 0.7)
+      pry (>= 0.9.11)
+    slop (3.6.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pry
+  pry-byebug
+  pry-remote
+  pry-stack_explorer
+
+BUNDLED WITH
+   1.10.6
