@@ -19,19 +19,7 @@ class SimWindow < Gosu::Window
   end
 
   def draw
-    if @perspective
-      draw_perspective
-    else
-      draw_projection
-    end
-  end
-
-  def draw_perspective
     @cube.display
-  end
-
-  def draw_projection
-    @cube.display_projection
   end
 
   def button_down(id)
@@ -50,8 +38,15 @@ class SimWindow < Gosu::Window
     elsif id == Gosu::KbS # along -z
       @cube.rotate('z', -@@theta)
     elsif id == Gosu::KbP # perspective
-      @perspective = !@perspective
+      update_perspective
     end
+  end
+
+  private
+
+  def update_perspective
+    @perspective = !@perspective
+    @cube.update_perspective
   end
 
 end

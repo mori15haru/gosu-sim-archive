@@ -132,6 +132,7 @@ class Cube
   def initialize
     @vertices = [-@@l, @@l].repeated_permutation(3).to_a
     @rotation = Transformation::Rotation.new(0.0)
+    @perspective = true
   end
 
   def rotate(axis, theta)
@@ -139,7 +140,7 @@ class Cube
     @vertices.map! { |v| @rotation.send(axis, v) }
   end
 
-  def display
+  def display_projection
     #vertices
     @vertices.each { |v| Display.point(v) }
     #edges
@@ -151,6 +152,12 @@ class Cube
     @vertices.each { |v| DisplayProjection.point(v) }
     #edges
     @@edges.each { |e| DisplayProjection.line(@vertices[e[FROM]], @vertices[e[TO]]) }
+  end
+
+  def update_perspective
+    @perspective = !@perspective 
+    ////// wanna do something like this.....
+    def display = displayProjection... 
   end
 
 end
