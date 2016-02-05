@@ -2,6 +2,11 @@
 require 'gosu'
 require './cube'
 
+if __FILE__ == $0
+  window = SimWindow.new
+  window.show
+end
+
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
@@ -12,9 +17,9 @@ class SimWindow < Gosu::Window
     self.caption = "Ruby :: Gosu :: Cube"
 
     @cube = Cube.new
-    @perspective = true
   end
 
+  # Not in use as it will update the cube by manually presing SPACE key 
   def update
   end
 
@@ -45,11 +50,7 @@ class SimWindow < Gosu::Window
   private
 
   def update_perspective
-    @perspective = !@perspective
     @cube.update_perspective
   end
 
 end
-
-window = SimWindow.new
-window.show
