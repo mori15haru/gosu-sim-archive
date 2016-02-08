@@ -32,16 +32,8 @@ module Transformation
       ]
     end
 
-    def self. x(v)
-      mMATRIX_X.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
-    end
-
-    def self.y(v)
-      mMATRIX_Y.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
-    end
-
-    def self.z(v)
-      mMATRIX_Z.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
+    def self.apply(axis, v)
+      send("mMATRIX_#{axis.upcase}").map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
     end
 
     def self.set_theta(theta_in_radian)

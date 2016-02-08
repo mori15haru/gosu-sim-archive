@@ -26,7 +26,7 @@ class Cube
 
   def rotate(axis, theta)
     @rotation::set_theta(theta)
-    @vertices.map! { |v| @rotation.send(axis, v) }
+    @vertices.map! { |v| @rotation.apply(axis, v) }
   end
 
   def draw
