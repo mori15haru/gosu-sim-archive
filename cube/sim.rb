@@ -19,12 +19,12 @@ class SimWindow < Gosu::Window
     @cube = Cube.new
   end
 
-  # Not in use as it will update the cube by manually presing SPACE key 
+  # Not in use as it will update the cube by manually presing SPACE key
   def update
   end
 
   def draw
-    @cube.display
+    @cube.draw
   end
 
   def button_down(id)
@@ -43,14 +43,8 @@ class SimWindow < Gosu::Window
     elsif id == Gosu::KbS # along -z
       @cube.rotate('z', -@@theta)
     elsif id == Gosu::KbP # perspective
-      update_perspective
+      @cube.update_perspective
     end
-  end
-
-  private
-
-  def update_perspective
-    @cube.update_perspective
   end
 
 end

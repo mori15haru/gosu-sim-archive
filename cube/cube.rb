@@ -6,6 +6,7 @@ require './display'
 # Cube
 ###############
 class Cube
+
   FROM = 0
   TO = 1
 
@@ -18,40 +19,31 @@ class Cube
 
   def initialize
     @vertices = [-@@l, @@l].repeated_permutation(3).to_a
-    @rotation = Transformation::Rotation.new(0.0)
-    @perspective = true
-    @display_method = method(:display_projection)
+    @rotation = Transformation::Rotation
+    @perspective = false
+    @display = Display::Orthographic
   end
 
   def rotate(axis, theta)
-    @rotation.set_theta(theta)
+    @rotation::set_theta(theta)
     @vertices.map! { |v| @rotation.send(axis, v) }
   end
 
-  def display
-    @display_method.call
-  end
-
-  def display_perspective
+  def draw
+    vertices_to_render = @vertices.map { |v| @display.apply(v) }
+    vertices_to_gosu = vertices_to_render.map { |v| Display::GosuCoordinate::convert(v) }
     #vertices
-    @vertices.each { |v| Display.point(v) }
+    vertices_to_gosu.each { |v| Display::Draw::point(v) }
     #edges
-    @@edges.each { |e| Display.line(@vertices[e[FROM]], @vertices[e[TO]]) }
-  end
-
-  def display_projection
-    #vertices
-    @vertices.each { |v| DisplayProjection.point(v) }
-    #edges
-    @@edges.each { |e| DisplayProjection.line(@vertices[e[FROM]], @vertices[e[TO]]) }
+    @@edges.each { |e| Display::Draw::line(vertices_to_gosu[e[FROM]], vertices_to_gosu[e[TO]]) }
   end
 
   def update_perspective
-    @perspective = !@perspective 
+    @perspective = !@perspective
     if @perspective
-      @display_method = method(:display_perspective)
+      @display = Display::Perspective
     else
-      @display_method = method(:display_projection)
+      @display = Display::Orthographic
     end
   end
 

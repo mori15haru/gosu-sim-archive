@@ -2,64 +2,103 @@
 # Transformation matrices
 #################################
 module Transformation
-  class Rotation
-    def initialize(theta)
-      @theta = theta
-    end
+  ######################################
+  # Rotations
+  ######################################
+  module Rotation
+    @theta = 0.0
 
-    def mMATRIX_X
-        [
-          [1,   0,    0],
-          [0, cos, -sin],
-          [0, sin,  cos]
+    def self.mMATRIX_X
+      [
+        [1,   0,    0],
+        [0, cos, -sin],
+        [0, sin,  cos]
       ]
     end
 
-    def mMATRIX_Y
-        [
-          [ cos, 0, sin],
-          [   0, 1,   0],
-          [-sin, 0, cos]
+    def self.mMATRIX_Y
+      [
+        [ cos, 0, sin],
+        [   0, 1,   0],
+        [-sin, 0, cos]
       ]
     end
 
-    def mMATRIX_Z
-        [
-          [cos, -sin, 0],
-          [sin,  cos, 0],
-          [  0,    0, 1]
+    def self.mMATRIX_Z
+      [
+        [cos, -sin, 0],
+        [sin,  cos, 0],
+        [  0,    0, 1]
       ]
     end
 
-    def x(v)
+    def self. x(v)
       mMATRIX_X.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
     end
 
-    def y(v)
+    def self.y(v)
       mMATRIX_Y.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
     end
 
-    def z(v)
+    def self.z(v)
       mMATRIX_Z.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
     end
 
-    def set_theta(theta_in_radian)
+    def self.set_theta(theta_in_radian)
       @theta = theta_in_radian
     end
 
-    private
-
-    def cos
+    def self.cos
       Math::cos(@theta)
     end
 
-    def sin
+    def self.sin
       Math::sin(@theta)
     end
 
   end
 
-  class Perspective
+  ############################
+  # Perspective
+  ############################
+  module Perspective
+    @f = 0.0
+
+    def self.mMATRIX
+      [
+        [@f,  0, 0],
+        [ 0, @f, 0],
+        [ 0,  0, 1]
+      ]
+    end
+
+    def self.apply(v)
+      set_f(v)
+      mMATRIX.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
+    end
+
+    def self.set_f(v)
+      @f = 400 / (v[2] + 200)
+    end
+
+  end
+
+  ############################
+  # Coordinate
+  ############################
+  module Coordinate
+    def self.mMATRIX
+      [
+        [1,  0, 0, 320],
+        [0, -1, 0, 240],
+        [1,  0, 0,   0]
+      ]
+    end
+
+    def self.convert(v)
+      v = v << 1
+      mMATRIX.map { |u| u.zip(v).map{|i, j| i*j}.inject(:+) }
+    end
   end
 
 end
