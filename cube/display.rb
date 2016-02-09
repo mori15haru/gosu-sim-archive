@@ -1,6 +1,9 @@
 # display.rb
 require './transformation'
 
+#####################################
+# Display namespace
+#####################################
 module Display
   #####################################
   # Draw
@@ -30,9 +33,9 @@ module Display
     end
   end
 
-  #####################################
+  ######################################
   # Display with orthographic projection
-  #####################################
+  ######################################
   module Orthographic
     def self.apply(v)
       return v

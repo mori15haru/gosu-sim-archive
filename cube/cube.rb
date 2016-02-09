@@ -6,7 +6,7 @@ require './display'
 # Cube
 ###############
 class Cube
-
+  #Variables for visualising
   FROM = 0
   TO = 1
 
@@ -30,11 +30,12 @@ class Cube
   end
 
   def draw
+    #apply projection and gosu coordinate
     vertices_to_render = @vertices.map { |v| @display.apply(v) }
     vertices_to_gosu = vertices_to_render.map { |v| Display::GosuCoordinate::convert(v) }
-    #vertices
+    #draw vertices
     vertices_to_gosu.each { |v| Display::Draw::point(v) }
-    #edges
+    #draw edges
     @@edges.each { |e| Display::Draw::line(vertices_to_gosu[e[FROM]], vertices_to_gosu[e[TO]]) }
   end
 

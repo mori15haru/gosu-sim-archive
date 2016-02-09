@@ -2,11 +2,6 @@
 require 'gosu'
 require './cube'
 
-if __FILE__ == $0
-  window = SimWindow.new
-  window.show
-end
-
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
@@ -47,4 +42,9 @@ class SimWindow < Gosu::Window
     end
   end
 
+end
+
+if __FILE__ == $0
+  window = SimWindow.new
+  window.show
 end
