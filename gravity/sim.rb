@@ -44,5 +44,7 @@ class SimWindow < Gosu::Window
   end
 end
 
-window = SimWindow.new(ARGV[0].to_i)
-window.show
+if __FILE__ == $0
+  window = SimWindow.new(ARGV[0].to_i)
+  window.show
+end
