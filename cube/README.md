@@ -5,7 +5,7 @@ It will draw a cube in 3D space, with the center at [0, 0, 0], and with the dime
 [link](http://cl.ly/1L3o192V3h3P)
 
 ##Run
-```ruby sim.rb ```
+```ruby sim.rb```
 
 ##Apply perspective
 * 'P' : applies/undoes the perspective

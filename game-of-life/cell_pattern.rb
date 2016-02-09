@@ -4,7 +4,7 @@ module CellPattern
     seeds = [
       [31,24], [32,24], [31,25], [32,25]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 
@@ -13,7 +13,7 @@ module CellPattern
     seeds = [
       [31,24], [32,24], [33,24]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 
@@ -22,7 +22,7 @@ module CellPattern
       [31,25], [32,25], [32,24],
       [33,25] [33,24], [34,24]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 
@@ -31,7 +31,7 @@ module CellPattern
       [31,23], [32,23], [31,22], [32,22],
       [33,21], [34,21], [33,20], [34,20]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 
@@ -40,7 +40,7 @@ module CellPattern
     seeds = [
       [5,5], [3,6], [5,6], [4,7], [5,7]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 
@@ -59,7 +59,7 @@ module CellPattern
       [32, 26], [34, 26], [34, 27],
       [44, 23], [45, 23], [44, 24], [45, 24]
     ]
-    
+
     seeds.map{|seed| Cell.new(CellState::ALIVE, seed)}
   end
 end
