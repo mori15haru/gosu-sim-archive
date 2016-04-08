@@ -2,9 +2,6 @@
 require 'gosu'
 require './display'
 
-###############
-# Cube
-###############
 class Cube
   #Variables for visualising
   FROM = 0

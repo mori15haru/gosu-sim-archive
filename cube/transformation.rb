@@ -1,6 +1,5 @@
-#################################
-# Transformation matrices
-#################################
+#transformation.rb
+
 module Transformation
   def self.apply(this, matrix, vector)
     this.send(matrix).map { |u| u.zip(vector).map{|i, j| i*j}.inject(:+) }
