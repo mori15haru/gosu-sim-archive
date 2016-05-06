@@ -51,15 +51,15 @@ class SimWindow < Gosu::Window
 
       case @button
       when 'j'
-        current_block.down if current_block
+        current_block.down if current_block && down_free?(current_block)
       when 'k'
-        current_block.up if current_block
+        current_block.up if current_block && up_free?(current_block)
       when 'h'
         current_block.left if current_block && left_free?(current_block)
       when 'l'
-        current_block.right if current_block
+        current_block.right if current_block && right_free?(current_block)
       when 'i'
-        current_block.rotate if current_block
+        current_block.rotate if current_block && rotation_free?(current_block)
       end
 
       @timer = Gosu.milliseconds
@@ -68,7 +68,7 @@ class SimWindow < Gosu::Window
   end
 
   def update_time?
-    Gosu.milliseconds - @timer > 100
+    Gosu.milliseconds - @timer > 1000
   end
 
   def draw
@@ -80,7 +80,23 @@ class SimWindow < Gosu::Window
   end
 
   def left_free?(current_block)
-    !current_block.l_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+    !current_block.left_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+  end
+  
+  def right_free?(current_block)
+    !current_block.right_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+  end
+
+  def up_free?(current_block)
+    !current_block.up_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+  end
+
+  def down_free?(current_block)
+    !current_block.down_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+  end
+
+  def rotation_free?(current_block)
+    !current_block.rotation_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
   end
 
   def button_down(id)

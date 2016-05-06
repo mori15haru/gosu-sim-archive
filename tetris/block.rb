@@ -40,8 +40,8 @@ module Block
     end
    
     def r_x_boundry_check
-      @x - 10 + 10 * x_min_max.fetch(next_stage)[0] >= 100 &&
-      @x + 10 + 10 * x_min_max.fetch(next_stage)[1] <= 300
+      @x + 10 * x_min_max.fetch(next_stage)[0] >= 100 &&
+      @x + 10 * x_min_max.fetch(next_stage)[1] <= 300
     end
 
     def x_left_check
@@ -84,8 +84,30 @@ module Block
       pixels.map { |pix| [pix[0], pix[1] + 10] }
     end
 
-    def l_next_pixels
+    def left_next_pixels
       pixels.map { |pix| [pix[0] - 10, pix[1] + 10] }
+    end
+
+    def right_next_pixels
+      pixels.map { |pix| [pix[0] + 10, pix[1] + 10] }
+    end
+
+    def up_next_pixels
+      pixels.map { |pix| [pix[0] - 10, pix[1]] }
+    end
+
+    def down_next_pixels
+      pixels.map { |pix| [pix[0] - 10, pix[1] + 20] }
+    end
+
+    def rotation_next_pixels
+      next_stage_pixels.map { |pix| [pix[0], pix[1] + 10] }
+    end
+
+    def next_stage_pixels 
+      shapes.fetch(next_stage).map do |pix|
+        [10 * pix[0] + @x, 10 * pix[1] + @y]
+      end
     end
 
     def pixels
