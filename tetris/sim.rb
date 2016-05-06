@@ -27,29 +27,48 @@ class SimWindow < Gosu::Window
   end
 
   def update
-    if @blocks.select(&:falling?).size < 1
-      @blocks << Block.const_get("#{shuffle}Block").new
-    end
-
-    @blocks.select(&:falling?).each do |b|
-      if b.y_boundry_check
-        @blocked += b.y_boundry_check
+    if update_time?
+      if @blocks.select(&:falling?).size < 1
+        @blocks << Block.const_get("#{shuffle}Block").new
       end
-    end
-    
-    @blocks.select(&:falling?).each do |b|
-      if b.next_pixels.any? { |pix| @blocked.compact.include?(pix) }
-        b.change_to_still
-        @blocked += b.pixels
+      
+      @blocks.select(&:falling?).each do |b|
+        if b.y_boundry_check
+          @blocked += b.y_boundry_check
+        end
       end
-    end
-   
-    if Gosu.milliseconds - @timer > 1000
+      
+      @blocks.select(&:falling?).each do |b|
+        if b.next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+          b.change_to_still
+          @blocked += b.pixels
+        end
+      end
+     
       @blocks.select(&:falling?).each do |b|
         b.fall
       end
+
+      case @button
+      when 'j'
+        current_block.down if current_block
+      when 'k'
+        current_block.up if current_block
+      when 'h'
+        current_block.left if current_block && left_free?(current_block)
+      when 'l'
+        current_block.right if current_block
+      when 'i'
+        current_block.rotate if current_block
+      end
+
       @timer = Gosu.milliseconds
+      @button = nil
     end
+  end
+
+  def update_time?
+    Gosu.milliseconds - @timer > 100
   end
 
   def draw
@@ -59,22 +78,26 @@ class SimWindow < Gosu::Window
   def current_block
     @blocks.select(&:falling?).first
   end
-  
+
+  def left_free?(current_block)
+    !current_block.l_next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+  end
+
   def button_down(id)
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbJ
-      current_block.down if current_block
+      @button = 'j'#current_block.down if current_block
     elsif id == Gosu::KbK
-      current_block.up if current_block
+      @button = 'k'#current_block.up if current_block
     elsif id == Gosu::KbH
-      current_block.left if current_block
+      @button = 'h'#current_block.left if current_block
     elsif id == Gosu::KbL
-      current_block.right if current_block
+      @button = 'l'#current_block.right if current_block
     elsif id == Gosu::KbSpace
       #@block.drop
     elsif id == Gosu::KbI
-      current_block.rotate if current_block
+      @button = 'i'#current_block.rotate if current_block
     end
   end
 

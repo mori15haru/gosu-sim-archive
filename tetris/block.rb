@@ -31,12 +31,29 @@ module Block
       end
     end
 
+    def next_stage
+      (@stage + 1) % n
+    end
+
+    def r_y_boundry_check
+      @y + 10 + 10 * y_max.fetch(next_stage) < 400
+    end
+   
+    def r_x_boundry_check
+      @x - 10 + 10 * x_min_max.fetch(next_stage)[0] >= 100 &&
+      @x + 10 + 10 * x_min_max.fetch(next_stage)[1] <= 300
+    end
+
     def x_left_check
       @x - 10 + 10 * x_min_max.fetch(@stage)[0] >= 100
     end
 
     def x_right_check
       @x + 10 + 10 * x_min_max.fetch(@stage)[1] <= 300
+    end
+
+    def boundry_check
+      r_y_boundry_check && r_x_boundry_check
     end
 
     def right
@@ -56,7 +73,7 @@ module Block
     end
 
     def rotate
-      @stage = (@stage + 1) % n if @state == State::Fall
+      @stage = (@stage + 1) % n if @state == State::Fall && boundry_check
     end
 
     def change_to_still
@@ -65,6 +82,10 @@ module Block
 
     def next_pixels
       pixels.map { |pix| [pix[0], pix[1] + 10] }
+    end
+
+    def l_next_pixels
+      pixels.map { |pix| [pix[0] - 10, pix[1] + 10] }
     end
 
     def pixels
