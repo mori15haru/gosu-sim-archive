@@ -1,99 +1,54 @@
 #sim.rb
 require 'gosu'
-
-module Shape
-  module State
-    Fall = :fall
-    Still = :still
-  end
-
-  class IBlock
-    N = 2
-
-    include State
-
-    def initialize
-      @x = 200
-      @y = 0
-      @stage = 0
-      @colour = Gosu::Color::WHITE
-      @state = State::Fall
-    end
-
-    def falling?
-      @state == State::Fall
-    end
-
-    def fall
-      @y += 5
-    end
-
-    def boundry_check
-      @state = State::Still if @y >= 400
-    end
-
-    def rotate
-      @stage = (@stage + 1) % N if @state == State::Fall
-    end
-
-    def shapes
-      {
-        0 => [[-2,0], [-1,0], [0,0], [1,0]],
-        1 => [[0,1], [0,0], [0,-1], [0,-2]]
-      }
-    end
-
-    def draw
-      shapes.fetch(@stage).each do |pix|
-        Gosu::draw_rect(10 * pix[0] + @x, 10 * pix[1] + @y, 10, 10, @colour)
-      end
-    end
-  end
-
-  class JBlock
-  end
-
-  class LBlock
-  end
-
-  class OBlock
-  end
-
-  class SBlock
-  end
-
-  class TBlock
-  end
-
-  class ZBlock
-  end
-end
+require './block'
+require './i_block'
+require './j_block'
+require './l_block'
+require './o_block'
+require './s_block'
+require './t_block'
+require './z_block'
 
 class SimWindow < Gosu::Window
-  module Shapes
-    I, J, L, O, S, T, Z = 0, 1, 2, 3, 4, 5, 6
-  end
-
   @@w = 500
   @@h = 500
-
-  include Shapes
 
   def initialize
     super @@w, @@h
     self.caption = 'Ruby :: Gosu :: Tetris'
-    @block = Shape.const_get("#{shuffle}Block").new
-    @blocks = [@block]
+    @initial_block = Block.const_get("#{shuffle}Block").new
+    @blocks = [@initial_block]
+    @blocked = []
+    @timer = 0.0
   end
 
   def shuffle
-    'I'
+    ['I', 'J', 'L', 'O', 'T', 'Z', 'S'].sample
   end
 
   def update
+    if @blocks.select(&:falling?).size < 1
+      @blocks << Block.const_get("#{shuffle}Block").new
+    end
+
     @blocks.select(&:falling?).each do |b|
-      b.boundry_check
-      b.fall
+      if b.y_boundry_check
+        @blocked += b.y_boundry_check
+      end
+    end
+    
+    @blocks.select(&:falling?).each do |b|
+      if b.next_pixels.any? { |pix| @blocked.compact.include?(pix) }
+        b.change_to_still
+        @blocked += b.pixels
+      end
+    end
+   
+    if Gosu.milliseconds - @timer > 1000
+      @blocks.select(&:falling?).each do |b|
+        b.fall
+      end
+      @timer = Gosu.milliseconds
     end
   end
 
@@ -101,21 +56,25 @@ class SimWindow < Gosu::Window
     @blocks.each { |b| b.draw }
   end
 
+  def current_block
+    @blocks.select(&:falling?).first
+  end
+  
   def button_down(id)
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbJ
-      #@block.down
+      current_block.down if current_block
     elsif id == Gosu::KbK
-      #@block.up
+      current_block.up if current_block
     elsif id == Gosu::KbH
-      #@block.left
+      current_block.left if current_block
     elsif id == Gosu::KbL
-      #@block.right
+      current_block.right if current_block
     elsif id == Gosu::KbSpace
       #@block.drop
     elsif id == Gosu::KbI
-      @block.rotate
+      current_block.rotate if current_block
     end
   end
 
