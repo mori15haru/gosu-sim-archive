@@ -20,94 +20,8 @@ module Block
       @state == State::Fall
     end
 
-    def fall
-      @y += 10 if @state == State::Fall
-    end
-
-    def y_boundry_check
-      if (@y + 10 + 10 * y_max.fetch(@stage)) >= 400
-        @state = State::Still
-        return pixels
-      end
-    end
-
-    def next_stage
-      (@stage + 1) % n
-    end
-
-    def r_y_boundry_check
-      @y + 10 + 10 * y_max.fetch(next_stage) < 400
-    end
-   
-    def r_x_boundry_check
-      @x + 10 * x_min_max.fetch(next_stage)[0] >= 100 &&
-      @x + 10 * x_min_max.fetch(next_stage)[1] <= 300
-    end
-
-    def x_left_check
-      @x - 10 + 10 * x_min_max.fetch(@stage)[0] >= 100
-    end
-
-    def x_right_check
-      @x + 10 + 10 * x_min_max.fetch(@stage)[1] <= 300
-    end
-
-    def boundry_check
-      r_y_boundry_check && r_x_boundry_check
-    end
-
-    def right
-      @x += 10 if @state == State::Fall && x_right_check
-    end
-
-    def left
-      @x -= 10 if @state == State::Fall && x_left_check
-    end
-
-    def down
-      @y += 10 if @state == State::Fall
-    end
-
-    def up
-      @y -= 10 if @state == State::Fall
-    end
-
-    def rotate
-      @stage = (@stage + 1) % n if @state == State::Fall && boundry_check
-    end
-
     def change_to_still
       @state = State::Still
-    end
-
-    def next_pixels
-      pixels.map { |pix| [pix[0], pix[1] + 10] }
-    end
-
-    def left_next_pixels
-      pixels.map { |pix| [pix[0] - 10, pix[1] + 10] }
-    end
-
-    def right_next_pixels
-      pixels.map { |pix| [pix[0] + 10, pix[1] + 10] }
-    end
-
-    def up_next_pixels
-      pixels.map { |pix| [pix[0] - 10, pix[1]] }
-    end
-
-    def down_next_pixels
-      pixels.map { |pix| [pix[0] - 10, pix[1] + 20] }
-    end
-
-    def rotation_next_pixels
-      next_stage_pixels.map { |pix| [pix[0], pix[1] + 10] }
-    end
-
-    def next_stage_pixels 
-      shapes.fetch(next_stage).map do |pix|
-        [10 * pix[0] + @x, 10 * pix[1] + @y]
-      end
     end
 
     def pixels
@@ -122,6 +36,8 @@ module Block
       end
     end
 
+    # important....
+    # no hash...
     def y_max
       @y_max ||= shapes.map { |k, v| v.map { |e| e[1] }.max }
     end

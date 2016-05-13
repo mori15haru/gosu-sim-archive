@@ -7,6 +7,6 @@ class ZBlock < Block::Block
   end
 
   def colour
-    Gosu::Color::GRAY
+    Gosu::Color::WHITE
   end
 end
