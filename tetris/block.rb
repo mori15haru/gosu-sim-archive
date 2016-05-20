@@ -1,4 +1,5 @@
 require 'gosu'
+require './move'
 
 module Block
   module State
@@ -8,6 +9,7 @@ module Block
 
   class Block
     include State
+    include Move
 
     def initialize
       @x = 200

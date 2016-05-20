@@ -8,7 +8,7 @@ require './blocks/o_block'
 require './blocks/s_block'
 require './blocks/t_block'
 require './blocks/z_block'
-require './move/'
+require './move'
 
 class SimWindow < Gosu::Window
   @@w = 500
@@ -25,10 +25,8 @@ class SimWindow < Gosu::Window
 
   def bottom
     bottom = []
-    (1..5).each do |y|
-      (1..23).each do |x|
-        bottom << [80 + 10 * x, 390 + 10 * y]
-      end
+    (1..23).each do |x|
+      bottom << [80 + 10 * x, 390 + 10]
     end
     return bottom
   end
@@ -41,40 +39,34 @@ class SimWindow < Gosu::Window
     if update_time?
       # create new blocks
       if @blocks.select(&:falling?).size < 1
-        @blocks << Block.const_get("#{shuffle}Block").new.extend(Block::Block::Move::Fall)
+        @blocks << Block.const_get("#{shuffle}Block").new
       end
 
       # key interactions with the current block
       if current_block && current_block.falling?
         case @button
         when 'j'
-          current_block.extend(Block::Block::Move::Down)
-          current_block.move if free?(:down)
+          current_block.move(:down) if free?(:down)
         when 'k'
-          current_block.extend(Block::Block::Move::Up)
-          current_block.move if free?(:up)
+          current_block.move(:down) if free?(:up)
         when 'h'
-          current_block.extend(Block::Block::Move::Left)
-          current_block.move if free?(:left)
+          current_block.move(:left) if free?(:left)
         when 'l'
-          current_block.extend(Block::Block::Move::Right)
-          current_block.move if free?(:right)
+          current_block.move(:right) if free?(:right)
         when 'i'
-          current_block.extend(Block::Block::Move::Rotate)
-          current_block.move if free?(:rotate)
+          current_block.move(:rotate) if free?(:rotate)
         end
-        current_block.extend(Block::Block::Move::Fall)
       end
 
       @blocks.select(&:falling?).each do |b|
-        if b.next.any? { |pix| @blocked.compact.include?(pix) }
+        if b.next(:fall).any? { |pix| @blocked.compact.include?(pix) }
           b.change_to_still
           @blocked += b.pixels
         end
       end
 
       @blocks.select(&:falling?).each do |b|
-        b.move
+        b.move(:fall)
       end
 
       @timer = Gosu.milliseconds
@@ -111,7 +103,7 @@ class SimWindow < Gosu::Window
   end
 
   def free?(key)
-    !current_block.next.any? { |pix| @blocked.compact.include?(pix) }
+    !current_block.next(key).any? { |pix| @blocked.compact.include?(pix) }
   end
 
   def button_down(id)
