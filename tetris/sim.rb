@@ -21,6 +21,7 @@ class SimWindow < Gosu::Window
     @blocks = [@initial_block]
     @blocked = bottom
     @timer = 0.0
+    @timer_update = 0.0
   end
 
   def bottom
@@ -58,6 +59,11 @@ class SimWindow < Gosu::Window
         end
       end
 
+      @timer = Gosu.milliseconds
+      @button = nil
+    elsif
+
+    if fall?
       @blocks.select(&:falling?).each do |b|
         if b.next(:fall).any? { |pix| @blocked.compact.include?(pix) }
           b.change_to_still
@@ -69,13 +75,16 @@ class SimWindow < Gosu::Window
         b.move(:fall)
       end
 
-      @timer = Gosu.milliseconds
-      @button = nil
+      @timer_fall = Gosu.milliseconds
     end
   end
 
+  def fall?
+    Gosu.milliseconds - @timer_fall > 200
+  end
+
   def update_time?
-    Gosu.milliseconds - @timer > 100
+    Gosu.milliseconds - @timer_update > 100
   end
 
   def show_grid
