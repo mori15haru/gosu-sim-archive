@@ -9,31 +9,67 @@ require './blocks/s_block'
 require './blocks/t_block'
 require './blocks/z_block'
 require './move'
+require './visualise'
+require './initialise'
 
 class SimWindow < Gosu::Window
   @@w = 500
   @@h = 500
 
+  include Visualise
+  include Initialise
+
   def initialize
     super @@w, @@h
     self.caption = 'Ruby :: Gosu :: Tetris'
-    @initial_block = Block.const_get("#{shuffle}Block").new
+
+    @initial_block = random_block
     @blocks = [@initial_block]
-    @blocked = bottom
+    @blocked_blocks = []
     @timer = 0.0
-    @timer_update = 0.0
   end
 
-  def bottom
-    bottom = []
-    (1..23).each do |x|
-      bottom << [80 + 10 * x, 390 + 10]
-    end
-    return bottom
+  def blocked
+    boundry + @blocked_blocks
+  end
+
+  def random_block
+    Block.const_get("#{shuffle}Block").new
+  end
+
+  def boundry
+    @boundry ||= right + left + bottom
   end
 
   def shuffle
     ['I', 'J', 'L', 'O', 'T', 'Z', 'S'].sample
+  end
+
+  def free?(key)
+    !current_block.next(key).any? { |pix| blocked.compact.include?(pix) }
+  end
+
+  def clear
+    y_to_clear = []
+
+    @blocked_blocks.group_by { |b| b[1] }.each do |y, blocks_on_y|
+      if blocks_on_y.size >= 21
+        blocks_on_y.each do |pix|
+          @blocked_blocks.delete(pix)
+        end
+        y_to_clear << y
+      end
+    end
+
+    y_to_clear.each do |clear_y|
+      @blocked_blocks.map! do |b|
+        if b[1] < clear_y
+          [b[0], b[1] + 10]
+        else
+          b
+        end
+      end
+    end
   end
 
   def update
@@ -49,7 +85,7 @@ class SimWindow < Gosu::Window
         when 'j'
           current_block.move(:down) if free?(:down)
         when 'k'
-          current_block.move(:down) if free?(:up)
+          current_block.move(:up) if free?(:up)
         when 'h'
           current_block.move(:left) if free?(:left)
         when 'l'
@@ -59,15 +95,11 @@ class SimWindow < Gosu::Window
         end
       end
 
-      @timer = Gosu.milliseconds
-      @button = nil
-    elsif
-
-    if fall?
       @blocks.select(&:falling?).each do |b|
-        if b.next(:fall).any? { |pix| @blocked.compact.include?(pix) }
+        if b.next(:fall).any? { |pix| blocked.compact.include?(pix) }
           b.change_to_still
-          @blocked += b.pixels
+          @blocked_blocks += b.pixels
+          clear
         end
       end
 
@@ -75,44 +107,17 @@ class SimWindow < Gosu::Window
         b.move(:fall)
       end
 
-      @timer_fall = Gosu.milliseconds
+      @timer = Gosu.milliseconds
+      @button = nil
     end
-  end
-
-  def fall?
-    Gosu.milliseconds - @timer_fall > 200
   end
 
   def update_time?
-    Gosu.milliseconds - @timer_update > 100
-  end
-
-  def show_grid
-    c = Gosu::Color::GRAY
-
-    (10..31).each do |w|
-      draw_line(10 * w, 10, c, 10 * w, 400, c)
-    end
-
-    (10..40).each do |h|
-      draw_line(100, h*10, c, 310, h *10, c)
-    end
-  end
-
-  def draw
-    show_grid
-    bottom.each do |b|
-      Gosu::draw_rect(b[0], b[1], 10, 10, Gosu::Color::GRAY)
-    end
-    @blocks.each { |b| b.draw }
+    Gosu.milliseconds - @timer > 100
   end
 
   def current_block
     @blocks.select(&:falling?).first
-  end
-
-  def free?(key)
-    !current_block.next(key).any? { |pix| @blocked.compact.include?(pix) }
   end
 
   def button_down(id)

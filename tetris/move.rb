@@ -4,9 +4,9 @@ module Block
       def move(key)
         case key
         when :right
-          @x += 10 if empty?(key)
+          @x += 10
         when :left
-          @x -= 10 if empty?(key)
+          @x -= 10
         when :up
           @y -= 10
         when :down
@@ -14,18 +14,7 @@ module Block
         when :fall
           @y += 10
         when :rotate
-          @stage = (@stage + 1) % n if empty?(key)
-        end
-      end
-
-      def empty?(key)
-        case key
-        when :right
-          @x + 10 + 10 * x_min_max.fetch(@stage)[1] <= 300
-        when :left
-          @x - 10 + 10 * x_min_max.fetch(@stage)[0] >= 100
-        when :rotate
-          r_y_boundry_check && r_x_boundry_check
+          @stage = (@stage + 1) % n
         end
       end
 
