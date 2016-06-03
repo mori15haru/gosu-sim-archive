@@ -1,13 +1,16 @@
 module Visualise
+
+  SIZE = 10
+
   def show_grid
     c = Gosu::Color::GRAY
 
     (10..31).each do |w|
-      draw_line(10 * w, 10, c, 10 * w, 400, c)
+      draw_line(SIZE * w, SIZE, c, SIZE * w, SIZE * 40, c)
     end
 
     (10..40).each do |h|
-      draw_line(100, h*10, c, 310, h *10, c)
+      draw_line(SIZE * 10, h * SIZE, c, SIZE * 31, h * SIZE, c)
     end
   end
 
@@ -18,19 +21,24 @@ module Visualise
     show_grid
   end
 
+  def draw_rect(pix, colour)
+    render = pix * SIZE
+    Gosu::draw_rect(render.x, render.y, SIZE, SIZE, colour)
+  end
+
   def show_blocks
-    @blocks.select(&:falling?).each { |b| b.draw }
+    falling_blocks.each { |b| b.draw }
   end
 
   def show_blocked_blocks
     @blocked_blocks.each do |b|
-      Gosu::draw_rect(b[0], b[1], 10, 10, Gosu::Color::CYAN)
+      draw_rect(b, Gosu::Color::CYAN)
     end
   end
 
   def show_boundry
     boundry.each do |b|
-      Gosu::draw_rect(b[0], b[1], 10, 10, Gosu::Color::GRAY)
+      draw_rect(b, Gosu::Color::GRAY)
     end
   end
 end

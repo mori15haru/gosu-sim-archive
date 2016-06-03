@@ -1,38 +1,47 @@
 module Block
   class Block
     module Move
+
       def move(key)
         case key
         when :right
-          @x += 10
+          @pos.x += 1
         when :left
-          @x -= 10
+          @pos.x -= 1
         when :up
-          @y -= 10
+          @pos.y -= 1
         when :down
-          @y += 10
+          @pos.y += 1
         when :fall
-          @y += 10
+          @pos.y += 1
         when :rotate
-          @stage = (@stage + 1) % n
+          @stage = next_stage
         end
+      end
+
+      def r_y_boundry_check
+        max_y < 40
+      end
+
+      def r_x_boundry_check
+        min_x >= 10 && max_x <= 30
       end
 
       def next(key)
         case key
         when :right
-          pixels.map { |pix| [pix[0] + 10, pix[1]] }
+          pixels.map { |pix| pix + Vec.new([1,0]) }
         when :left
-          pixels.map { |pix| [pix[0] - 10, pix[1]] }
+          pixels.map { |pix| pix + Vec.new([-1,0]) }
         when :up
-          pixels.map { |pix| [pix[0], pix[1] + 10] }
+          pixels.map { |pix| pix + Vec.new([0,-1]) }
         when :down
-          pixels.map { |pix| [pix[0], pix[1] + 10] }
+          pixels.map { |pix| pix + Vec.new([0,1]) }
         when :fall
-          pixels.map { |pix| [pix[0], pix[1] + 10] }
+          pixels.map { |pix| pix + Vec.new([0,1]) }
         when :rotate
-          shapes.fetch(next_stage).map do |pix|
-            [10 * pix[0] + @x, 10 * pix[1] + @y]
+          shapes.fetch(next_stage).fetch(:pixels).map do |pix|
+            pix + @pos
           end
         end
       end
@@ -41,13 +50,20 @@ module Block
         (@stage + 1) % n
       end
 
-      def r_y_boundry_check
-        @y + 10 + 10 * y_max.fetch(next_stage) < 400
+      def next_shape
+        shapes.fetch(next_stage)
       end
 
-      def r_x_boundry_check
-        @x + 10 * x_min_max.fetch(next_stage)[0] >= 100 &&
-          @x + 10 * x_min_max.fetch(next_stage)[1] <= 300
+      def max_y
+        @pos.y + next_shape[:y_max] + 1
+      end
+
+      def min_x
+        @pos.x + next_shape[:x_min]
+      end
+
+      def max_x
+        @pos.x + next_shape[:x_max]
       end
     end
   end
