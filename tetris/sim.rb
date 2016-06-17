@@ -98,9 +98,15 @@ class SimWindow < Gosu::Window
 
   def button_interaction
     if current_block && @button
-      current_block.move(@button) if free?(@button)
-      if @double_button
+      if @button == :drop
+        while free?(:down)
+          current_block.move(:down)
+        end
+      else current_block && @button
         current_block.move(@button) if free?(@button)
+        if @double_button
+          current_block.move(@button) if free?(@button)
+        end
       end
     end
   end
@@ -165,7 +171,7 @@ class SimWindow < Gosu::Window
       @double_button = true if @button == :right
       @button = :right
     elsif id == Gosu::KbW
-      #block.drop
+      @button = :drop
     elsif id == Gosu::KbI
       @button = :rotate
     end
