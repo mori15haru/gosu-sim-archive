@@ -5,9 +5,9 @@
   2. game over? - done
   3. pix object? - done
   4. timing
-  5. shadow?
+  5. shadow? - done
   6. image?
-  7. drop by space bar
+  7. drop by space bar - done
 =end
 
 require 'gosu'
@@ -175,7 +175,6 @@ class SimWindow < Gosu::Window
     elsif id == Gosu::KbI
       @button = :rotate
     end
-
   end
 end
 

@@ -11,9 +11,10 @@ module Block
   module Visualise
     SIZE = 10
 
-    def draw_vec(pix)
+    def draw_vec(pix, c)
+      c = colour if c.nil?
       render = pix * SIZE
-      Gosu::draw_rect(render.x, render.y, SIZE, SIZE, colour)
+      Gosu::draw_rect(render.x, render.y, SIZE, SIZE, c)
     end
   end
 
@@ -21,6 +22,8 @@ module Block
     include State
     include Move
     include Visualise
+
+    attr_accessor :pos, :stage, :state
 
     def initialize
       @pos = Vec.new([20, 0])
@@ -42,9 +45,28 @@ module Block
       end
     end
 
-    def draw
+    def serialised_pos
+      Vec.new([pos.x, pos.y].clone)
+    end
+
+    def shadow(blocked)
+      self.class.new.tap do |block|
+        block.pos = self.serialised_pos
+        block.stage = self.stage
+        block.state = self.state
+        block.drop(blocked)
+      end
+    end
+
+    def drop(blocked)
+      while !self.next(:down).any? { |pix| blocked.map(&:arr).compact.include?(pix.arr) }
+        self.move(:down)
+      end
+    end
+
+    def draw(colour = nil)
       pixels.each do |pix|
-        draw_vec(pix)
+        draw_vec(pix, colour)
       end
     end
 

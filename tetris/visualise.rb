@@ -18,6 +18,7 @@ module Visualise
     show_game_over_line
     show_boundry
     show_blocks
+    show_shadow if current_block
     show_blocked_blocks
     show_grid
   end
@@ -25,6 +26,10 @@ module Visualise
   def draw_rect(pix, colour)
     render = pix * SIZE
     Gosu::draw_rect(render.x, render.y, SIZE, SIZE, colour)
+  end
+
+  def show_shadow
+    current_block.shadow(blocked).draw(Gosu::Color::RED)
   end
 
   def show_blocks
