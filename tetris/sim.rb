@@ -1,7 +1,7 @@
 #sim.rb
 
 =begin
-  1. push more than one steps
+  1. push more than one steps - done
   2. game over?
   3. pix object? - done
   4. timing
