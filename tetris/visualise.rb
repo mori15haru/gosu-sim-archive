@@ -15,6 +15,7 @@ module Visualise
   end
 
   def draw
+    show_game_over_line
     show_boundry
     show_blocks
     show_blocked_blocks
@@ -32,6 +33,12 @@ module Visualise
 
   def show_blocked_blocks
     @blocked_blocks.each do |b|
+      draw_rect(b, Gosu::Color::CYAN)
+    end
+  end
+
+  def show_game_over_line
+    game_over_line.each do |b|
       draw_rect(b, Gosu::Color::CYAN)
     end
   end

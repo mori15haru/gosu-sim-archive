@@ -2,7 +2,7 @@
 
 =begin
   1. push more than one steps - done
-  2. game over?
+  2. game over? - done
   3. pix object? - done
   4. timing
   5. shadow?
@@ -26,6 +26,8 @@ require './initialise'
 class SimWindow < Gosu::Window
   @@w = 500
   @@h = 500
+
+  @@limit = 20
 
   include Visualise
   include Initialise
@@ -79,6 +81,10 @@ class SimWindow < Gosu::Window
     end
   end
 
+  def game_over
+    close if @blocked_blocks.map(&:y).any? { |y| y < @@limit }
+  end
+
   def update
     if update_time?
       # create new blocks
@@ -99,6 +105,7 @@ class SimWindow < Gosu::Window
           b.change_to_still
           @blocked_blocks += b.pixels
           clear
+          game_over
         end
       end
 
