@@ -7,7 +7,7 @@
   4. timing
   5. shadow?
   6. image?
-  7. using space bar
+  7. drop by space bar
 =end
 
 require 'gosu'
@@ -28,6 +28,7 @@ class SimWindow < Gosu::Window
   @@h = 500
 
   @@limit = 20
+  @@update_time = 150
 
   include Visualise
   include Initialise
@@ -49,6 +50,10 @@ class SimWindow < Gosu::Window
 
   def random_block
     Block.const_get("#{shuffle}Block").new
+  end
+
+  def game_over_line
+    @game_over_line ||= (1..23).map { |x| Vec.new([8 + x, @@limit]) }
   end
 
   def boundry
@@ -85,33 +90,44 @@ class SimWindow < Gosu::Window
     close if @blocked_blocks.map(&:y).any? { |y| y < @@limit }
   end
 
+  def generate_block
+    if falling_blocks.size < 1
+      @blocks << random_block
+    end
+  end
+
+  def button_interaction
+    if current_block && @button
+      current_block.move(@button) if free?(@button)
+      if @double_button
+        current_block.move(@button) if free?(@button)
+      end
+    end
+  end
+
+  def update_block
+    falling_blocks.each do |b|
+      if done?(b)
+        b.change_to_still
+        @blocked_blocks += b.pixels
+        clear
+        game_over
+      end
+    end
+  end
+
+  def drop_block
+    falling_blocks.each do |b|
+      b.move(:fall)
+    end
+  end
+
   def update
     if update_time?
-      # create new blocks
-      if falling_blocks.size < 1
-        @blocks << random_block
-      end
-
-      # key interactions with the current block
-      if current_block && @button
-        current_block.move(@button) if free?(@button)
-        if @double_button
-          current_block.move(@button) if free?(@button)
-        end
-      end
-
-      falling_blocks.each do |b|
-        if done?(b)
-          b.change_to_still
-          @blocked_blocks += b.pixels
-          clear
-          game_over
-        end
-      end
-
-      falling_blocks.each do |b|
-        b.move(:fall)
-      end
+      generate_block
+      button_interaction
+      update_block
+      drop_block
 
       @timer = Gosu.milliseconds
       @double_button = false
@@ -128,7 +144,7 @@ class SimWindow < Gosu::Window
   end
 
   def update_time?
-    Gosu.milliseconds - @timer > 200
+    Gosu.milliseconds - @timer > @@update_time
   end
 
   def current_block
