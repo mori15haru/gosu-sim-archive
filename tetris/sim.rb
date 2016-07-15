@@ -27,8 +27,8 @@ class SimWindow < Gosu::Window
   @@w = 500
   @@h = 500
 
-  @@limit = 20
-  @@update_time = 150
+  @@limit = 10
+  @@update_time = 200
 
   include Visualise
   include Initialise
@@ -37,7 +37,8 @@ class SimWindow < Gosu::Window
     super @@w, @@h
     self.caption = 'Ruby :: Gosu :: Tetris'
 
-    @double_button = false
+    @second_stage = false
+    @double_button = nil
     @button = nil
     @blocks = []
     @blocked_blocks = []
@@ -104,9 +105,6 @@ class SimWindow < Gosu::Window
         end
       else current_block && @button
         current_block.move(@button) if free?(@button)
-        if @double_button
-          current_block.move(@button) if free?(@button)
-        end
       end
     end
   end
@@ -132,12 +130,23 @@ class SimWindow < Gosu::Window
     if update_time?
       generate_block
       button_interaction
+
+      @button = nil
+      @timer = Gosu.milliseconds
+      @second_stage = true
+    elsif @second_stage && second_update_time?
+      if current_block && @double_button
+        if free?(@double_button)
+          puts @double_button.inspect
+          current_block.move(@double_button)
+        end
+        #current_block.move(@button) if free?(@button)
+      end
       update_block
       drop_block
 
-      @timer = Gosu.milliseconds
-      @double_button = false
-      @button = nil
+      @double_button = nil
+      @second_stage = false
     end
   end
 
@@ -147,6 +156,10 @@ class SimWindow < Gosu::Window
 
   def falling_blocks
     @blocks.select(&:falling?)
+  end
+
+  def second_update_time?
+    Gosu.milliseconds - @timer > @@update_time/2.0
   end
 
   def update_time?
@@ -165,10 +178,10 @@ class SimWindow < Gosu::Window
     elsif id == Gosu::KbK
       @button = :up
     elsif id == Gosu::KbH
-      @double_button = true if @button == :left
+      @double_button = @button if @button == :left
       @button = :left
     elsif id == Gosu::KbL
-      @double_button = true if @button == :right
+      @double_button = @button if @button == :right
       @button = :right
     elsif id == Gosu::KbW
       @button = :drop
