@@ -1,5 +1,4 @@
 module Visualise
-
   SIZE = 10
 
   def show_grid

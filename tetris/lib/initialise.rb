@@ -21,4 +21,8 @@ module Initialise
       [8 + x, 40]
     end
   end
+
+  def game_over_line
+    @game_over_line ||= (1..23).map { |x| Vec.new([8 + x, @limit]) }
+  end
 end

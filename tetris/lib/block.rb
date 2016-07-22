@@ -1,6 +1,6 @@
 require 'gosu'
-require './move'
-require './vector'
+require './lib/move'
+require './lib/vector'
 
 module Block
   module State

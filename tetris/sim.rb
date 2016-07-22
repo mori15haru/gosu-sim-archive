@@ -11,183 +11,61 @@
 =end
 
 require 'gosu'
-require './block'
-require './blocks/i_block'
-require './blocks/j_block'
-require './blocks/l_block'
-require './blocks/o_block'
-require './blocks/s_block'
-require './blocks/t_block'
-require './blocks/z_block'
-require './move'
-require './visualise'
-require './initialise'
+require './lib/block'
+require './lib/blocks/i_block'
+require './lib/blocks/j_block'
+require './lib/blocks/l_block'
+require './lib/blocks/o_block'
+require './lib/blocks/s_block'
+require './lib/blocks/t_block'
+require './lib/blocks/z_block'
+require './lib/move'
+require './lib/visualise'
+require './lib/initialise'
+require './lib/update'
+require './lib/visualise'
 
 class SimWindow < Gosu::Window
-  @@w = 500
-  @@h = 500
-
-  @@limit = 10
-  @@update_time = 200
-
   include Visualise
   include Initialise
+  include Update::Generate
+  include Update::Finish
+  include Update::Clear
+  include Update::ButtonInteraction
+  include Update::Drop
+  include Update::Check
+
+  @@w = 500
+  @@h = 500
 
   def initialize
     super @@w, @@h
     self.caption = 'Ruby :: Gosu :: Tetris'
 
+    @drop_update_time = 200
+    @drop_timer = 0.0
+    
+    @limit = 10
     @second_stage = false
     @double_button = nil
     @button = nil
     @blocks = []
     @blocked_blocks = []
-    @timer = 0.0
-  end
-
-  def blocked
-    boundry + @blocked_blocks
-  end
-
-  def random_block
-    Block.const_get("#{shuffle}Block").new
-  end
-
-  def game_over_line
-    @game_over_line ||= (1..23).map { |x| Vec.new([8 + x, @@limit]) }
-  end
-
-  def boundry
-    @boundry ||= (right + left + bottom).map { |pix| Vec.new(pix) }
-  end
-
-  def shuffle
-    ['I', 'J', 'L', 'O', 'T', 'Z', 'S'].sample
-  end
-
-  def free?(key)
-    !current_block.next(key).any? { |pix| blocked.map(&:arr).compact.include?(pix.arr) }
-  end
-
-  def clear
-    y_to_clear = []
-
-    @blocked_blocks.group_by(&:y).each do |y, blocks_on_y|
-      if blocks_on_y.size >= 21
-        blocks_on_y.each do |pix|
-          @blocked_blocks.delete(pix)
-        end
-        y_to_clear << y
-      end
-    end
-
-    @blocked_blocks.map! do |b|
-      n = y_to_clear.count { |y| y > b.y }
-      Vec.new([b.x, b.y + n])
-    end
-  end
-
-  def game_over
-    close if @blocked_blocks.map(&:y).any? { |y| y < @@limit }
-  end
-
-  def generate_block
-    if falling_blocks.size < 1
-      @blocks << random_block
-    end
-  end
-
-  def button_interaction
-    if current_block && @button
-      if @button == :drop
-        while free?(:down)
-          current_block.move(:down)
-        end
-      else current_block && @button
-        current_block.move(@button) if free?(@button)
-      end
-    end
-  end
-
-  def update_block
-    falling_blocks.each do |b|
-      if done?(b)
-        b.change_to_still
-        @blocked_blocks += b.pixels
-        clear
-        game_over
-      end
-    end
-  end
-
-  def drop_block
-    falling_blocks.each do |b|
-      b.move(:fall)
-    end
   end
 
   def update
-    if update_time?
-      generate_block
-      button_interaction
+    # add a new block
+    generate_block
 
-      @button = nil
-      @timer = Gosu.milliseconds
-      @second_stage = true
-    elsif @second_stage && second_update_time?
-      if current_block && @double_button
-        if free?(@double_button)
-          puts @double_button.inspect
-          current_block.move(@double_button)
-        end
-        #current_block.move(@button) if free?(@button)
-      end
-      update_block
-      drop_block
+    # button interaction
+    button_interaction
+    double_button_interaction
 
-      @double_button = nil
-      @second_stage = false
-    end
-  end
+    # update block status
+    update_block
 
-  def done?(block)
-    block.next(:fall).any? { |pix| blocked.map(&:arr).compact.include?(pix.arr) }
-  end
-
-  def falling_blocks
-    @blocks.select(&:falling?)
-  end
-
-  def second_update_time?
-    Gosu.milliseconds - @timer > @@update_time/2.0
-  end
-
-  def update_time?
-    Gosu.milliseconds - @timer > @@update_time
-  end
-
-  def current_block
-    @blocks.select(&:falling?).first
-  end
-
-  def button_down(id)
-    if id == Gosu::KbEscape
-      close
-    elsif id == Gosu::KbJ
-      @button = :down
-    elsif id == Gosu::KbK
-      @button = :up
-    elsif id == Gosu::KbH
-      @double_button = @button if @button == :left
-      @button = :left
-    elsif id == Gosu::KbL
-      @double_button = @button if @button == :right
-      @button = :right
-    elsif id == Gosu::KbW
-      @button = :drop
-    elsif id == Gosu::KbI
-      @button = :rotate
-    end
+    # drop block
+    drop_block
   end
 end
 
