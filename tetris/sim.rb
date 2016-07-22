@@ -44,7 +44,7 @@ class SimWindow < Gosu::Window
 
     @drop_update_time = 200
     @drop_timer = 0.0
-    
+
     @limit = 10
     @second_stage = false
     @double_button = nil
@@ -56,14 +56,8 @@ class SimWindow < Gosu::Window
   def update
     # add a new block
     generate_block
-
     # button interaction
     button_interaction
-    double_button_interaction
-
-    # update block status
-    update_block
-
     # drop block
     drop_block
   end

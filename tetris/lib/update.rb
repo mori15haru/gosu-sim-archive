@@ -19,12 +19,13 @@ module Update
     def drop_block
       return if !update_time?
 
+      update_block
       falling_blocks.each do |b|
         b.move(:fall)
       end
       @drop_timer = Gosu.milliseconds
     end
-    
+
     def update_time?
       Gosu.milliseconds - @drop_timer > @drop_update_time
     end
@@ -43,10 +44,7 @@ module Update
       end
       @button = nil
     end
-    
-    def double_button_interaction
-    end
-  
+
     def button_down(id)
       if id == Gosu::KbEscape
         close
@@ -55,10 +53,8 @@ module Update
       elsif id == Gosu::KbK
         @button = :up
       elsif id == Gosu::KbH
-        @double_button = @button if @button == :left
         @button = :left
       elsif id == Gosu::KbL
-        @double_button = @button if @button == :right
         @button = :right
       elsif id == Gosu::KbW
         @button = :drop
