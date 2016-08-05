@@ -4,47 +4,61 @@ require './particle'
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
-  @@t = 0.1
   def initialize(n)
+    # gosu variables
     super @@w, @@h
     self.caption = "Ruby :: Gosu :: Particle"
+    #
+    @t = 0.1
     @particles = []
-    self.generate_particles(n)   
+    self.generate_particles(n)
   end
 
   def update
-    @particles.each do |p|
-      p.update
-    end
+    @particles.each(&:update)
   end
 
   def draw
-    @particles.each do |p|
-      p.draw
-    end
+    @particles.each(&:draw)
+  end
+
+  def window_size
+    [
+      width,
+      height
+    ]
+  end
+
+  def random_initial_status
+    prng = Random.new
+    # initial position
+    x = prng.rand(@@w)
+    y = prng.rand(@@h)
+    # initial velocity
+    vx = (-1)**x*prng.rand(30)
+    vy = (-1)**y*prng.rand(30)
+    # initial acceleration
+    ax = 0
+    ay = 9.8
+    #
+    [x, y, vx, vy, ax, ay]
+  end
+
+  def random_particle
+    Particle.new(random_initial_status,self, @t)
   end
 
   def generate_particles(n)
     prng = Random.new
-    n.times{
-      x = prng.rand(@@w)
-      y = prng.rand(@@h)
-      vx = (-1)**x*prng.rand(30)
-      vy = (-1)**y*prng.rand(30)
-      ax = 0
-      ay = 9.8
-      @particles.push(Particle.new(x, y, vx, vy, ax, ay, @@w, @@h, @@t))
-    }
+    n.times { @particles << random_particle }
   end
 
   def button_down(id)
-    if id == Gosu::KbEscape
-      close
-    end
+    close if id == Gosu::KbEscape
   end
 end
 
 if __FILE__ == $0
-  window = SimWindow.new(ARGV[0].to_i)
-  window.show
+  number_of_particles = ARGV[0].to_i
+  SimWindow.new(number_of_particles).show
 end
