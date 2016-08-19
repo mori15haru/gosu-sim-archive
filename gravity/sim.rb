@@ -4,6 +4,7 @@ require './particle'
 class SimWindow < Gosu::Window
   @@w = 640
   @@h = 480
+
   def initialize(n)
     # gosu variables
     super @@w, @@h
@@ -22,13 +23,6 @@ class SimWindow < Gosu::Window
     @particles.each(&:draw)
   end
 
-  def window_size
-    [
-      width,
-      height
-    ]
-  end
-
   def random_initial_status
     prng = Random.new
     # initial position
@@ -45,11 +39,10 @@ class SimWindow < Gosu::Window
   end
 
   def random_particle
-    Particle.new(random_initial_status,self, @t)
+    Particle.new(random_initial_status, self, @t)
   end
 
   def generate_particles(n)
-    prng = Random.new
     n.times { @particles << random_particle }
   end
 
